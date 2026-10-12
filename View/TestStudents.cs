@@ -1,79 +1,20 @@
-using Model;
+using BL;
 
 namespace TestData;
 
 public static class TestStudents
 {
-    public static List<Student> Students = new List<Student>
+    public static void AddTestStudents(BusinessLogic logic)
     {
-        new Student
-        {
-            Name = "Иван Иванов",
-            Speciality = "Программирование",
-            Group = "ПИ-21"
-        },
-
-        new Student
-        {
-            Name = "Алексей Петров",
-            Speciality = "Программирование",
-            Group = "ПИ-21"
-        },
-
-        new Student
-        {
-            Name = "Максим Сидоров",
-            Speciality = "Информационные системы",
-            Group = "ИС-22"
-        },
-
-        new Student
-        {
-            Name = "Анна Смирнова",
-            Speciality = "Экономика",
-            Group = "ЭК-21"
-        },
-
-        new Student
-        {
-            Name = "Дмитрий Кузнецов",
-            Speciality = "Информационные системы",
-            Group = "ИС-22"
-        },
-
-        new Student
-        {
-            Name = "Мария Попова",
-            Speciality = "Экономика",
-            Group = "ЭК-21"
-        },
-
-        new Student
-        {
-            Name = "Никита Волков",
-            Speciality = "Программирование",
-            Group = "ПИ-23"
-        },
-
-        new Student
-        {
-            Name = "Екатерина Соколова",
-            Speciality = "Информационные системы",
-            Group = "ИС-22"
-        },
-
-        new Student
-        {
-            Name = "Артём Морозов",
-            Speciality = "Программирование",
-            Group = "ПИ-23"
-        },
-
-        new Student
-        {
-            Name = "Ольга Новикова",
-            Speciality = "Экономика",
-            Group = "ЭК-21"
-        }
-    };
+        logic.AddStudent("Иван Иванов", "Программирование", "ПИ-21");
+        logic.AddStudent("Алексей Петров", "Программирование", "ПИ-21");
+        logic.AddStudent("Максим Сидоров", "Информационные системы", "ИС-22");
+        logic.AddStudent("Анна Смирнова", "Экономика", "ЭК-21");
+        logic.AddStudent("Дмитрий Кузнецов", "Информационные системы", "ИС-22");
+        logic.AddStudent("Мария Попова", "Экономика", "ЭК-21");
+        logic.AddStudent("Никита Волков", "Программирование", "ПИ-23");
+        logic.AddStudent("Екатерина Соколова", "Информационные системы", "ИС-22");
+        logic.AddStudent("Артём Морозов", "Программирование", "ПИ-23");
+        logic.AddStudent("Ольга Новикова", "Экономика", "ЭК-21");
+    }
 }

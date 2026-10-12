@@ -7,9 +7,11 @@ namespace View;
 internal class Program
 {
     static BusinessLogic logic = new BusinessLogic();
-
+    
+    
     static void Main(string[] args)
     {
+        TestStudents.AddTestStudents(logic);
 
         string[] items =
         {
