@@ -1,18 +1,12 @@
-﻿using Model;
-using BL;
-using TestData;
+﻿using BL;
 
 namespace View;
-// сделал в привычной форме, мне так удобней
 internal class Program
 {
     static BusinessLogic logic = new BusinessLogic();
     
-    
     static void Main(string[] args)
     {
-        TestStudents.AddTestStudents(logic);
-
         string[] items =
         {
             "Показать таблицу",
@@ -21,7 +15,7 @@ internal class Program
             "Показать гистограмму",
             "Выход"
         };
-
+        logic.AddTestStudents();//тестовые данные
         int selected = 0;
 
         while (true)
@@ -74,18 +68,19 @@ internal class Program
 
     static void ShowStudents()
     {
-        IReadOnlyList<Student> students = logic.GetStudents();
+        string[][] studentsData = logic.GetStudents();
 
-        if (students.Count == 0)
+        if (studentsData.Length == 0)
         {
             Console.WriteLine("Список студентов пуст");
             return;
         }
 
         Console.WriteLine($"{"ID",-4}{"Имя",-25}{"Специальность",-25}{"Группа",-10}");
-        for (int i = 0; i < students.Count; i++)
+        for (int i = 0; i < studentsData.Length; i++)
         {
-            Console.WriteLine($"{i,-4}{students[i].Name,-25}{students[i].Speciality,-25}{students[i].Group,-10}");
+            // studentsData[i][0] — Имя, [1] — Специальность, [2] — Группа
+            Console.WriteLine($"{i,-4}{studentsData[i][0],-25}{studentsData[i][1],-25}{studentsData[i][2],-10}");
         }
     }//метод вывода студентов для консоли, использует GetStudents из BusinessLogic
 

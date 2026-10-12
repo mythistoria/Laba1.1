@@ -1,20 +1,34 @@
 using BL;
-using Model;
+
 
 namespace WinFormsApp1
 {
     public partial class Form1 : Form
     {
         private readonly BusinessLogic logic = new BusinessLogic();
+
         public Form1()
         {
             InitializeComponent();
+            logic.AddTestStudents();
             RefreshTable();
         }
         private void RefreshTable()
         {
-            dgvStudents.DataSource = null;
-            dgvStudents.DataSource = logic.GetStudents().ToList();
+            if (dgvStudents.Columns.Count == 0)
+            {
+                dgvStudents.ColumnCount = 3;
+                dgvStudents.Columns[0].Name = "ФИО";
+                dgvStudents.Columns[1].Name = "Специальность";
+                dgvStudents.Columns[2].Name = "Группа";
+                dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            }
+            dgvStudents.Rows.Clear();
+            string[][] studentsData = logic.GetStudents();
+            foreach (var studentRow in studentsData)
+            {
+                dgvStudents.Rows.Add(studentRow);
+            }
             dgvStudents.ClearSelection();
         }
         private void buttonAdd_Click(object sender, EventArgs e)
