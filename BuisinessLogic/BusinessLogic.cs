@@ -20,14 +20,20 @@ public class BusinessLogic
         students.Add(newStudent);
         return true;
     }
-    public bool DeleteStudent(int index) //убрал Console.WriteLine для использования в Form, возвращает bool
-    {
-        if (index < 0 || index >= students.Count)
-            return false;
 
-        students.RemoveAt(index);
-        return true;
+    public bool DeleteStudent(int index)
+    {
+        try
+        {
+            students.RemoveAt(index);
+            return true;
+        }
+        catch (ArgumentOutOfRangeException)
+        {
+            return false;
+        }
     }
+
     //удалил метод ShowStudents, так как для Form и консоли нужны разные методы
     //в каждом проекте свои методы для вывода студентов
     public IReadOnlyList<Student> GetStudents()
