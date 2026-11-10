@@ -1,24 +1,45 @@
-﻿using Model;
+using DataAccessLayer;
+using Model;
+
 namespace BL;
 
+/// <summary>
+/// Режим хранения данных: через Entity Framework Core или через Dapper.
+/// </summary>
+public enum StorageMode
+{
+    EfCore,
+    Dapper
+}
+
+/// <summary>
+/// Бизнес-логика приложения: проверка данных, добавление, удаление, список и статистика. Не зависит от интерфейса.
+/// </summary>
 public class BusinessLogic
 {
-    private List<Student> students = new List<Student>();
+    private readonly IRepository<Student> repository;
 
-    public void AddTestStudents() //добавил в логику тестовые данные, удалил тестовые данные из View
+    /// <summary>
+    /// Инициализирует базу данных и выбирает реализацию репозитория.
+    /// </summary>
+    /// <param name="mode">EF Core (по умолчанию) или Dapper.</param>
+    public BusinessLogic(StorageMode mode = StorageMode.EfCore)
     {
-        AddStudent("Иван Иванов", "Программирование", "ПИ-21");
-        AddStudent("Алексей Петров", "Программирование", "ПИ-21");
-        AddStudent("Максим Сидоров", "Информационные системы", "ИС-22");
-        AddStudent("Анна Смирнова", "Экономика", "ЭК-21");
-        AddStudent("Дмитрий Кузнецов", "Информационные системы", "ИС-22");
-        AddStudent("Мария Попова", "Экономика", "ЭК-21");
-        AddStudent("Никита Волков", "Программирование", "ПИ-23");
-        AddStudent("Екатерина Соколова", "Информационные системы", "ИС-22");
-        AddStudent("Артём Морозов", "Программирование", "ПИ-23");
-        AddStudent("Ольга Новикова", "Экономика", "ЭК-21");
+        DbInitializer.Init();
+
+        repository = mode == StorageMode.Dapper
+            ? new DapperStudentRepository()
+            : new EfStudentRepository();
     }
-    public bool AddStudent(string newName, string newSpeciality, string newGroup)//заменил метод, чтобы в проверка вводимых данных осуществлялась в логике
+
+    /// <summary>
+    /// Проверяет, что поля не пустые, и добавляет студента.
+    /// </summary>
+    /// <param name="newName">ФИО.</param>
+    /// <param name="newSpeciality">Специальность.</param>
+    /// <param name="newGroup">Группа.</param>
+    /// <returns>true - студент добавлен; false - данные некорректны.</returns>
+    public bool AddStudent(string newName, string newSpeciality, string newGroup)
     {
         if (string.IsNullOrWhiteSpace(newName) ||
             string.IsNullOrWhiteSpace(newSpeciality) ||
@@ -26,30 +47,46 @@ public class BusinessLogic
         {
             return false;
         }
-        Student newStudent = new Student();
-        newStudent.Name = newName;
-        newStudent.Speciality = newSpeciality;
-        newStudent.Group = newGroup;
-        students.Add(newStudent);
+
+        repository.Create(new Student
+        {
+            Name = newName,
+            Speciality = newSpeciality,
+            Group = newGroup
+        });
+
         return true;
     }
 
+    // index - номер строки в списке (View про Id в базе ничего не знает)
+    /// <summary>
+    /// Удаляет студента по номеру в списке: находит его Id и вызывает репозиторий.
+    /// </summary>
+    /// <param name="index">Номер строки в списке, начиная с 0.</param>
+    /// <returns>true - удалено; false - номер вне диапазона.</returns>
     public bool DeleteStudent(int index)
     {
-        try
-        {
-            students.RemoveAt(index);
-            return true;
-        }
-        catch (ArgumentOutOfRangeException)
+        List<Student> students = repository.ReadAll();
+
+        if (index < 0 || index >= students.Count)
         {
             return false;
         }
+
+        repository.Delete(students[index].Id);
+        return true;
     }
 
-    public string[][] GetStudents() // теперь возвращает массив массивов, чтобы не использовать обьекты student
+    // Наружу отдаём массив массивов, чтобы View не зависел от Model
+    /// <summary>
+    /// Возвращает список студентов как массив массивов строк (ФИО, специальность, группа), чтобы интерфейс не зависел от класса Student.
+    /// </summary>
+    /// <returns>Массив строк [ФИО, специальность, группа].</returns>
+    public string[][] GetStudents()
     {
-        var result = new string[students.Count][];
+        List<Student> students = repository.ReadAll();
+        string[][] result = new string[students.Count][];
+
         for (int i = 0; i < students.Count; i++)
         {
             result[i] = new string[]
@@ -59,14 +96,19 @@ public class BusinessLogic
                 students[i].Group
             };
         }
+
         return result;
     }
 
-    public Dictionary<string, int> GetHistogram() //возвращает словарь вместо Console.WriteLine для использования в Form
+    /// <summary>
+    /// Считает количество студентов по каждой специальности.
+    /// </summary>
+    /// <returns>Словарь: специальность - количество.</returns>
+    public Dictionary<string, int> GetHistogram()
     {
         Dictionary<string, int> result = new Dictionary<string, int>();
 
-        foreach (Student student in students)
+        foreach (Student student in repository.ReadAll())
         {
             if (!result.ContainsKey(student.Speciality))
                 result.Add(student.Speciality, 1);

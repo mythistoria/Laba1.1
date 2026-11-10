@@ -3,9 +3,8 @@ namespace WinFormsApp1
     internal static class Program
     {
         /// <summary>
-        ///  The main entry point for the application.
+        /// Точка входа WinForms-приложения: настройка и запуск главной формы.
         /// </summary>
-        [STAThread]
         static void Main()
         {
             // To customize application configuration such as set high DPI settings or default font,
