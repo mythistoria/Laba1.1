@@ -1,9 +1,12 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace WinFormsApp1
 {
+    /// <summary>
+    /// Диалоговое окно ввода данных нового студента.
+    /// </summary>
     internal class AddStudentForm:Form
     {
         private readonly TextBox txtName = new() { Left = 170, Top = 20, Width = 360 };
@@ -12,10 +15,22 @@ namespace WinFormsApp1
         private readonly Button btnOk = new() { Text = "OK", Left = 150, Top = 160, Width = 120, Height = 35 };
         private readonly Button btnCancel = new() { Text = "Отмена", Left = 290, Top = 160, Width = 120, Height = 35 };
 
+        /// <summary>
+        /// ФИО из поля ввода (без пробелов по краям).
+        /// </summary>
         public string StudentName => txtName.Text.Trim();
+        /// <summary>
+        /// Специальность из поля ввода.
+        /// </summary>
         public string Speciality => txtSpeciality.Text.Trim();
+        /// <summary>
+        /// Группа из поля ввода.
+        /// </summary>
         public string Group => txtGroup.Text.Trim();
 
+        /// <summary>
+        /// Создаёт окно: поля, кнопки OK и Отмена. OK закрывает окно с результатом OK, только если все поля заполнены.
+        /// </summary>
         public AddStudentForm()
         {
             Text = "Добавить студента";
