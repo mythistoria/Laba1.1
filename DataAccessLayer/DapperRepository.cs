@@ -9,13 +9,13 @@ public sealed class DapperRepository : IRepository
 {
     private const string SelectSql = "SELECT Id AS ID, Name, Speciality, GroupName AS [Group] FROM Students";
 
-    public int Add(IDomainObject item)
+    public int Add<T>(T item) where T : class, IDomainObject
     {
-        RepositoryRules.Validate(item, true);
+        var student = RepositoryRules.Validate(item, true);
         using var connection = new SqlConnection(DbSettings.ConnectionString);
         item.ID = connection.QuerySingle<int>(
             "INSERT INTO Students (Name, Speciality, GroupName) VALUES (@Name, @Speciality, @Group); " +
-            "SELECT CAST(SCOPE_IDENTITY() AS int);", (Student)item);
+            "SELECT CAST(SCOPE_IDENTITY() AS int);", student);
         return item.ID;
     }
 
@@ -42,12 +42,12 @@ public sealed class DapperRepository : IRepository
         return connection.QuerySingleOrDefault<T>(SelectSql + " WHERE Id = @ID", new { ID = id });
     }
 
-    public void Save(IDomainObject item)
+    public void Save<T>(T item) where T : class, IDomainObject
     {
-        RepositoryRules.Validate(item, false);
+        var student = RepositoryRules.Validate(item, false);
         using var connection = new SqlConnection(DbSettings.ConnectionString);
         if (connection.Execute("UPDATE Students SET Name = @Name, Speciality = @Speciality, GroupName = @Group WHERE Id = @ID",
-                (Student)item) != 1)
+                student) != 1)
             throw new KeyNotFoundException("Студент не найден.");
     }
 }

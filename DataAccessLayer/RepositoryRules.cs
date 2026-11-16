@@ -10,14 +10,15 @@ internal static class RepositoryRules
             throw new NotSupportedException($"Тип {typeof(T).Name} не входит в модель хранилища.");
     }
 
-    public static void Validate(IDomainObject item, bool isNew)
+    public static Student Validate<T>(T item, bool isNew) where T : class, IDomainObject
     {
         ArgumentNullException.ThrowIfNull(item);
-        if (item is not Student)
+        if (item is not Student student)
             throw new NotSupportedException($"Тип {item.GetType().Name} не входит в модель хранилища.");
         if (isNew ? item.ID != 0 : item.ID <= 0)
             throw new ArgumentException(isNew
                 ? "Новый объект должен иметь ID = 0: идентификатор выдаёт база."
                 : "Для обновления нужен ID существующего объекта.", nameof(item));
+        return student;
     }
 }

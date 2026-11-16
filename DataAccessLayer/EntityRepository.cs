@@ -6,11 +6,11 @@ namespace DataAccessLayer;
 /// <summary>CRUD студентов через EF Core.</summary>
 public sealed class EntityRepository : IRepository
 {
-    public int Add(IDomainObject item)
+    public int Add<T>(T item) where T : class, IDomainObject
     {
-        RepositoryRules.Validate(item, true);
+        var student = RepositoryRules.Validate(item, true);
         using var db = new Context();
-        db.Students.Add((Student)item);
+        db.Students.Add(student);
         db.SaveChanges();
         return item.ID;
     }
@@ -41,13 +41,13 @@ public sealed class EntityRepository : IRepository
             .SingleOrDefault(item => EF.Property<int>(item, nameof(IDomainObject.ID)) == id);
     }
 
-    public void Save(IDomainObject item)
+    public void Save<T>(T item) where T : class, IDomainObject
     {
-        RepositoryRules.Validate(item, false);
+        var student = RepositoryRules.Validate(item, false);
         using var db = new Context();
         var stored = db.Students.SingleOrDefault(s => s.ID == item.ID)
             ?? throw new KeyNotFoundException("Студент не найден.");
-        db.Entry(stored).CurrentValues.SetValues((Student)item);
+        db.Entry(stored).CurrentValues.SetValues(student);
         db.SaveChanges();
     }
 }
