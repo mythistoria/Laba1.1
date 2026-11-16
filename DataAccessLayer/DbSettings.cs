@@ -5,24 +5,16 @@ namespace DataAccessLayer;
 /// </summary>
 public static class DbSettings
 {
-    // Имя экземпляра LocalDB. Стандартный экземпляр - "MSSQLLocalDB".
-    // На этом компьютере автоэкземпляр MSSQLLocalDB не создаётся, поэтому используется
-    // вручную созданный экземпляр (команда: sqllocaldb create Laba2 -s).
-    // Если у вас всё работает штатно - замените на "MSSQLLocalDB".
     /// <summary>
     /// Имя экземпляра LocalDB (стандартный - MSSQLLocalDB).
     /// </summary>
     public const string Instance = "Laba2";
 
-    // Имя базы внутри экземпляра. Должно отличаться от баз, созданных раньше (Laba2DB, MSSQLLocalDB).
     /// <summary>
     /// Имя базы данных внутри экземпляра.
     /// </summary>
     public const string Database = "Laba2Students";
 
-    // Файл базы лежит в папке проекта DataAccessLayer (виден в Обозревателе решений).
-    // Он создаётся при первом запуске. Путь ищется от папки с exe вверх до папки решения,
-    // поэтому проект можно переносить в любое место на жёстком диске.
     /// <summary>
     /// Полный путь к файлу базы Laba2DB.mdf в папке проекта DataAccessLayer.
     /// </summary>
