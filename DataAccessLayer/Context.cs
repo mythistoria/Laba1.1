@@ -12,7 +12,6 @@ public class Context : DbContext
     /// Набор студентов (таблица Students).
     /// </summary>
     public DbSet<Student> Students => Set<Student>();
-    public DbSet<StudentGrade> StudentGrades => Set<StudentGrade>();
 
     /// <summary>
     /// Настраивает подключение: используется SQL Server (LocalDB) со строкой из DbSettings.
@@ -37,19 +36,6 @@ public class Context : DbContext
             entity.Property(s => s.Name).HasMaxLength(200).IsRequired();
             entity.Property(s => s.Speciality).HasMaxLength(200).IsRequired();
             entity.Property(s => s.Group).HasColumnName("GroupName").HasMaxLength(50).IsRequired();
-        });
-        modelBuilder.Entity<StudentGrade>(entity =>
-        {
-            entity.ToTable("StudentGrades");
-            entity.HasKey(g => g.ID);
-            entity.Property(g => g.ID).HasColumnName("Id").ValueGeneratedOnAdd();
-            entity.Property(g => g.StudentID).HasColumnName("StudentId");
-            entity.Property(g => g.Subject).HasMaxLength(200).IsRequired();
-            entity.HasOne(g => g.Student)
-                .WithMany(s => s.Grades)
-                .HasForeignKey(g => g.StudentID)
-                .IsRequired()
-                .OnDelete(DeleteBehavior.Cascade);
         });
     }
 }

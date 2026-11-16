@@ -10,6 +10,6 @@ public interface IRepository
     bool Delete<T>(int id) where T : class, IDomainObject;
     List<T> GetAll<T>() where T : class, IDomainObject;
     T? GetById<T>(int id) where T : class, IDomainObject;
-    /// <summary>Обновляет существующий объект; для Student сохраняет также состав его оценок.</summary>
+    /// <summary>Обновляет существующий объект.</summary>
     void Save(IDomainObject item);
 }

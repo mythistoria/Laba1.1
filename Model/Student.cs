@@ -22,6 +22,4 @@ public class Student : IDomainObject
     /// </summary>
     public string Group { get; set; } = "";
 
-    /// <summary>Оценки принадлежат этому студенту и удаляются вместе с ним.</summary>
-    public ICollection<StudentGrade> Grades { get; set; } = new List<StudentGrade>();
 }
