@@ -1,28 +1,15 @@
+using Model;
+
 namespace DataAccessLayer;
 
-/// <summary>Базовые CRUD-операции. Update пока не нужен.</summary>
-public interface IRepository<T>
+/// <summary>Общий CRUD-контракт. Методы принимают только доменные объекты с ID.</summary>
+public interface IRepository
 {
-    /// <summary>
-    /// Добавляет запись в хранилище.
-    /// </summary>
-    /// <param name="item">Добавляемый объект.</param>
-    /// <returns>Идентификатор (Id), выданный базой данных.</returns>
-    int Create(T item);
-    /// <summary>
-    /// Читает все записи, отсортированные по Id.
-    /// </summary>
-    /// <returns>Список всех объектов.</returns>
-    List<T> ReadAll();
-    /// <summary>
-    /// Ищет запись по идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор записи.</param>
-    /// <returns>Найденный объект или null, если записи нет.</returns>
-    T? ReadById(int id);
-    /// <summary>
-    /// Удаляет запись по идентификатору.
-    /// </summary>
-    /// <param name="id">Идентификатор удаляемой записи.</param>
-    void Delete(int id);
+    /// <summary>Добавляет новый объект и присваивает ему ID, выданный БД.</summary>
+    int Add(IDomainObject item);
+    bool Delete<T>(int id) where T : class, IDomainObject;
+    List<T> GetAll<T>() where T : class, IDomainObject;
+    T? GetById<T>(int id) where T : class, IDomainObject;
+    /// <summary>Обновляет существующий объект; для Student сохраняет также состав его оценок.</summary>
+    void Save(IDomainObject item);
 }

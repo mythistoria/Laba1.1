@@ -3,12 +3,12 @@ namespace Model;
 /// <summary>
 /// Доменный объект: студент. Хранится в таблице Students.
 /// </summary>
-public class Student
+public class Student : IDomainObject
 {
     /// <summary>
     /// Первичный ключ. Значение выдаёт база данных (IDENTITY), вручную не задаётся.
     /// </summary>
-    public int Id { get; set; }
+    public int ID { get; set; }
     /// <summary>
     /// ФИО студента.
     /// </summary>
@@ -21,4 +21,7 @@ public class Student
     /// Учебная группа (в таблице колонка называется GroupName, т.к. GROUP - служебное слово SQL).
     /// </summary>
     public string Group { get; set; } = "";
+
+    /// <summary>Оценки принадлежат этому студенту и удаляются вместе с ним.</summary>
+    public ICollection<StudentGrade> Grades { get; set; } = new List<StudentGrade>();
 }

@@ -17,7 +17,7 @@ public enum StorageMode
 /// </summary>
 public class BusinessLogic
 {
-    private readonly IRepository<Student> repository;
+    private readonly IRepository repository;
 
     /// <summary>
     /// Инициализирует базу данных и выбирает реализацию репозитория.
@@ -28,8 +28,8 @@ public class BusinessLogic
         DbInitializer.Init();
 
         repository = mode == StorageMode.Dapper
-            ? new DapperStudentRepository()
-            : new EfStudentRepository();
+            ? new DapperRepository()
+            : new EntityRepository();
     }
 
     /// <summary>
@@ -48,7 +48,7 @@ public class BusinessLogic
             return false;
         }
 
-        repository.Create(new Student
+        repository.Add(new Student
         {
             Name = newName,
             Speciality = newSpeciality,
@@ -66,15 +66,14 @@ public class BusinessLogic
     /// <returns>true - удалено; false - номер вне диапазона.</returns>
     public bool DeleteStudent(int index)
     {
-        List<Student> students = repository.ReadAll();
+        List<Student> students = repository.GetAll<Student>();
 
         if (index < 0 || index >= students.Count)
         {
             return false;
         }
 
-        repository.Delete(students[index].Id);
-        return true;
+        return repository.Delete<Student>(students[index].ID);
     }
 
     // Наружу отдаём массив массивов, чтобы View не зависел от Model
@@ -84,7 +83,7 @@ public class BusinessLogic
     /// <returns>Массив строк [ФИО, специальность, группа].</returns>
     public string[][] GetStudents()
     {
-        List<Student> students = repository.ReadAll();
+        List<Student> students = repository.GetAll<Student>();
         string[][] result = new string[students.Count][];
 
         for (int i = 0; i < students.Count; i++)
@@ -108,7 +107,7 @@ public class BusinessLogic
     {
         Dictionary<string, int> result = new Dictionary<string, int>();
 
-        foreach (Student student in repository.ReadAll())
+        foreach (Student student in repository.GetAll<Student>())
         {
             if (!result.ContainsKey(student.Speciality))
                 result.Add(student.Speciality, 1);

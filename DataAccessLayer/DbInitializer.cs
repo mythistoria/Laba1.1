@@ -1,4 +1,5 @@
 using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
 using Model;
 
 namespace DataAccessLayer;
@@ -15,14 +16,35 @@ public static class DbInitializer
     {
         EnsureDatabase();
 
-        using var db = new AppDbContext();
+        using var db = new Context();
         db.Database.EnsureCreated();
+
+        // EnsureCreated не обновляет ранее созданную БД: добавляем новую таблицу без потери Students.
+        db.Database.ExecuteSqlRaw("""
+            IF OBJECT_ID(N'dbo.StudentGrades', N'U') IS NULL
+            BEGIN
+                CREATE TABLE dbo.StudentGrades (
+                    Id int IDENTITY(1,1) NOT NULL CONSTRAINT PK_StudentGrades PRIMARY KEY,
+                    StudentId int NOT NULL,
+                    Subject nvarchar(200) NOT NULL,
+                    [Value] int NOT NULL,
+                    CONSTRAINT FK_StudentGrades_Students_StudentId FOREIGN KEY (StudentId)
+                        REFERENCES dbo.Students (Id) ON DELETE CASCADE
+                );
+                CREATE INDEX IX_StudentGrades_StudentId ON dbo.StudentGrades (StudentId);
+            END
+            """);
 
         if (db.Students.Any())
             return;
 
         db.Students.AddRange(
-            new Student { Name = "Иван Иванов",         Speciality = "Программирование",        Group = "ПИ-21" },
+            new Student { Name = "Иван Иванов", Speciality = "Программирование", Group = "ПИ-21",
+                Grades = new List<StudentGrade>
+                {
+                    new() { Subject = "Программирование", Value = 5 },
+                    new() { Subject = "Математика", Value = 4 }
+                } },
             new Student { Name = "Алексей Петров",      Speciality = "Программирование",        Group = "ПИ-21" },
             new Student { Name = "Максим Сидоров",      Speciality = "Информационные системы", Group = "ИС-22" },
             new Student { Name = "Анна Смирнова",       Speciality = "Экономика",               Group = "ЭК-21" },
