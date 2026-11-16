@@ -2,14 +2,14 @@ using Model;
 
 namespace DataAccessLayer;
 
-/// <summary>Общий CRUD-контракт. Методы принимают только доменные объекты с ID.</summary>
-public interface IRepository
+/// <summary>Репозиторий только для ссылочных доменных типов с обязательным ID.</summary>
+public interface IRepository<T> where T : class, IDomainObject
 {
     /// <summary>Добавляет новый объект и присваивает ему ID, выданный БД.</summary>
-    int Add<T>(T item) where T : class, IDomainObject;
-    bool Delete<T>(int id) where T : class, IDomainObject;
-    List<T> GetAll<T>() where T : class, IDomainObject;
-    T? GetById<T>(int id) where T : class, IDomainObject;
+    int Add(T item);
+    bool Delete(int id);
+    List<T> GetAll();
+    T? GetById(int id);
     /// <summary>Обновляет существующий объект.</summary>
-    void Save<T>(T item) where T : class, IDomainObject;
+    void Save(T item);
 }

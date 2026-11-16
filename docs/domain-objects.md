@@ -5,28 +5,31 @@
 - Единственный доменный класс — `Student`: `ID`, `Name`, `Speciality`, `Group`.
 - `Student` реализует `Model.IDomainObject` со свойством `int ID { get; set; }`.
 - `Context : DbContext` отображает студента на таблицу `Students`; свойство `ID` соответствует существующей колонке `Id`.
-- `EntityRepository` и `DapperRepository` реализуют общий `IRepository` через EF Core и Dapper.
-- BL хранит `IRepository` и выбирает реализацию по `StorageMode`.
+- `EntityRepository` и `DapperRepository` реализуют `IRepository<Student>` через EF Core и Dapper.
+- BL хранит `IRepository<Student>` и выбирает реализацию по `StorageMode`.
 - Исходники `View` и `WinFormsApp1` и их контракт с BL сохранены.
 
 ## Контракт
 
 ```csharp
-int Add<T>(T item) where T : class, IDomainObject;
-bool Delete<T>(int id) where T : class, IDomainObject;
-List<T> GetAll<T>() where T : class, IDomainObject;
-T? GetById<T>(int id) where T : class, IDomainObject;
-void Save<T>(T item) where T : class, IDomainObject;
+public interface IRepository<T> where T : class, IDomainObject
+{
+    int Add(T item);
+    bool Delete(int id);
+    List<T> GetAll();
+    T? GetById(int id);
+    void Save(T item);
+}
 ```
 
-Все методы ограничивают тип `T` условием `class, IDomainObject`: компилятор требует ссылочный тип, реализующий контракт со свойством `ID`. Например, `repository.Add(new object())` и `repository.GetAll<string>()` не компилируются. Реализации повторяют ограничения интерфейса.
+Ограничение задаётся один раз на уровне интерфейса. Даже объявление `IRepository<object>` или `IRepository<string>` не компилируется: тип должен быть ссылочным и реализовывать `IDomainObject`. У CRUD-методов нет собственных параметров типа и ограничений. Оба конкретных репозитория реализуют `IRepository<Student>`, поэтому принимают и возвращают студентов без приведения типов и проверки типа во время выполнения.
 
-Обе реализации поддерживают `Student`. `Add` вставляет объект с ID = 0 и присваивает выданный базой ID. `Save` обновляет существующую запись с положительным ID. `GetAll` сортирует по ID, `GetById` возвращает `null` для отсутствующей записи, `Delete` сообщает факт удаления. Типы, не включённые в модель хранения, отклоняются.
+Обе реализации поддерживают `Student`. `Add` вставляет объект с ID = 0 и присваивает выданный базой ID. `Save` обновляет существующую запись с положительным ID. `GetAll` сортирует по ID, `GetById` возвращает `null` для отсутствующей записи, `Delete` сообщает факт удаления. Несовместимые типы отклоняются компилятором.
 
 `IDomainObject` гарантирует наличие свойства, а генерацию идентификатора обеспечивает SQL Server.
 
 ```csharp
-IRepository repository = new EntityRepository(); // либо new DapperRepository()
+IRepository<Student> repository = new EntityRepository(); // либо new DapperRepository()
 var student = new Student
 {
     Name = "Иван Иванов",
@@ -34,7 +37,7 @@ var student = new Student
     Group = "ПИ-21"
 };
 repository.Add(student);
-var saved = repository.GetById<Student>(student.ID)!;
+var saved = repository.GetById(student.ID)!;
 saved.Group = "ПИ-22";
 repository.Save(saved);
 ```

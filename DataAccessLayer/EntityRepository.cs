@@ -4,50 +4,47 @@ using Model;
 namespace DataAccessLayer;
 
 /// <summary>CRUD студентов через EF Core.</summary>
-public sealed class EntityRepository : IRepository
+public sealed class EntityRepository : IRepository<Student>
 {
-    public int Add<T>(T item) where T : class, IDomainObject
+    public int Add(Student item)
     {
-        var student = RepositoryRules.Validate(item, true);
+        RepositoryRules.Validate(item, true);
         using var db = new Context();
-        db.Students.Add(student);
+        db.Students.Add(item);
         db.SaveChanges();
         return item.ID;
     }
 
-    public bool Delete<T>(int id) where T : class, IDomainObject
+    public bool Delete(int id)
     {
-        RepositoryRules.EnsureSupported<T>();
         if (id <= 0) return false;
         using var db = new Context();
-        return db.Set<T>().Where(item => EF.Property<int>(item, nameof(IDomainObject.ID)) == id)
+        return db.Students.Where(item => EF.Property<int>(item, nameof(IDomainObject.ID)) == id)
             .ExecuteDelete() == 1;
     }
 
-    public List<T> GetAll<T>() where T : class, IDomainObject
+    public List<Student> GetAll()
     {
-        RepositoryRules.EnsureSupported<T>();
         using var db = new Context();
-        return db.Set<T>().AsNoTracking()
+        return db.Students.AsNoTracking()
             .OrderBy(item => EF.Property<int>(item, nameof(IDomainObject.ID))).ToList();
     }
 
-    public T? GetById<T>(int id) where T : class, IDomainObject
+    public Student? GetById(int id)
     {
-        RepositoryRules.EnsureSupported<T>();
         if (id <= 0) return null;
         using var db = new Context();
-        return db.Set<T>().AsNoTracking()
+        return db.Students.AsNoTracking()
             .SingleOrDefault(item => EF.Property<int>(item, nameof(IDomainObject.ID)) == id);
     }
 
-    public void Save<T>(T item) where T : class, IDomainObject
+    public void Save(Student item)
     {
-        var student = RepositoryRules.Validate(item, false);
+        RepositoryRules.Validate(item, false);
         using var db = new Context();
         var stored = db.Students.SingleOrDefault(s => s.ID == item.ID)
             ?? throw new KeyNotFoundException("Студент не найден.");
-        db.Entry(stored).CurrentValues.SetValues(student);
+        db.Entry(stored).CurrentValues.SetValues(item);
         db.SaveChanges();
     }
 }

@@ -17,7 +17,7 @@ public enum StorageMode
 /// </summary>
 public class BusinessLogic
 {
-    private readonly IRepository repository;
+    private readonly IRepository<Student> repository;
 
     /// <summary>
     /// Инициализирует базу данных и выбирает реализацию репозитория.
@@ -66,14 +66,14 @@ public class BusinessLogic
     /// <returns>true - удалено; false - номер вне диапазона.</returns>
     public bool DeleteStudent(int index)
     {
-        List<Student> students = repository.GetAll<Student>();
+        List<Student> students = repository.GetAll();
 
         if (index < 0 || index >= students.Count)
         {
             return false;
         }
 
-        return repository.Delete<Student>(students[index].ID);
+        return repository.Delete(students[index].ID);
     }
 
     // Наружу отдаём массив массивов, чтобы View не зависел от Model
@@ -83,7 +83,7 @@ public class BusinessLogic
     /// <returns>Массив строк [ФИО, специальность, группа].</returns>
     public string[][] GetStudents()
     {
-        List<Student> students = repository.GetAll<Student>();
+        List<Student> students = repository.GetAll();
         string[][] result = new string[students.Count][];
 
         for (int i = 0; i < students.Count; i++)
@@ -107,7 +107,7 @@ public class BusinessLogic
     {
         Dictionary<string, int> result = new Dictionary<string, int>();
 
-        foreach (Student student in repository.GetAll<Student>())
+        foreach (Student student in repository.GetAll())
         {
             if (!result.ContainsKey(student.Speciality))
                 result.Add(student.Speciality, 1);
