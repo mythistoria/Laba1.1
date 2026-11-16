@@ -14,8 +14,7 @@ internal class Program
     /// <param name="args">Аргументы командной строки.</param>
     static void Main(string[] args)
     {
-        // запуск с аргументом "dapper" включает реализацию через Dapper, иначе EF Core
-        StorageMode mode = args.Contains("dapper") ? StorageMode.Dapper : StorageMode.EfCore;
+        StorageMode mode = ChooseMode();
 
         try
         {
@@ -64,7 +63,29 @@ internal class Program
             }
         }
     }
+    /// <summary>
+    /// Показывает меню выбора реализации доступа к данным.
+    /// </summary>
+    /// <returns>EF Core или Dapper.</returns>
+    static StorageMode ChooseMode()
+    {
+        string[] items = { "Entity Framework Core", "Dapper" };
+        int selected = 0;
 
+        while (true)
+        {
+            DrawMenu(items, selected);
+            Console.WriteLine("\n(выберите реализацию доступа к данным)");
+            ConsoleKey key = Console.ReadKey().Key;
+
+            if (key == ConsoleKey.UpArrow || key == ConsoleKey.W)
+                selected = (selected - 1 + items.Length) % items.Length;
+            else if (key == ConsoleKey.DownArrow || key == ConsoleKey.S)
+                selected = (selected + 1) % items.Length;
+            else if (key == ConsoleKey.Enter)
+                return selected == 1 ? StorageMode.Dapper : StorageMode.EfCore;
+        }
+    }
     /// <summary>
     /// Рисует меню и подсвечивает выбранный пункт.
     /// </summary>
