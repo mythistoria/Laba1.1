@@ -34,7 +34,6 @@ public class AppDbContext : DbContext
             entity.HasKey(s => s.Id);
             entity.Property(s => s.Name).HasMaxLength(200).IsRequired();
             entity.Property(s => s.Speciality).HasMaxLength(200).IsRequired();
-            // GROUP - зарезервированное слово SQL, поэтому колонка называется GroupName
             entity.Property(s => s.Group).HasColumnName("GroupName").HasMaxLength(50).IsRequired();
         });
     }

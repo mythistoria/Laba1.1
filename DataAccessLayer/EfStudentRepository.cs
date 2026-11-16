@@ -4,7 +4,7 @@ using Model;
 namespace DataAccessLayer;
 
 /// <summary>
-/// Репозиторий студентов на Entity Framework Core (сценарий 1).
+/// Репозиторий студентов на Entity Framework
 /// </summary>
 public class EfStudentRepository : IRepository<Student>
 {

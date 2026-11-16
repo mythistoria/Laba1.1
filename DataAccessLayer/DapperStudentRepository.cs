@@ -5,7 +5,7 @@ using Model;
 namespace DataAccessLayer;
 
 /// <summary>
-/// Репозиторий студентов на Dapper (сценарий 2): SQL-запросы пишутся вручную.
+/// Репозиторий студентов на Dapper SQL-запросы пишутся вручную.
 /// </summary>
 public class DapperStudentRepository : IRepository<Student>
 {
