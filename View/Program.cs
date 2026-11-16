@@ -1,12 +1,31 @@
-﻿using BL;
+using BL;
 
 namespace View;
+/// <summary>
+/// Консольный интерфейс: меню со стрелками, работает через BusinessLogic.
+/// </summary>
 internal class Program
 {
-    static BusinessLogic logic = new BusinessLogic();
+    static BusinessLogic logic = null!;
     
+    /// <summary>
+    /// Точка входа: выбирает режим хранения (аргумент dapper - Dapper, иначе EF Core), подключается к базе и запускает цикл меню.
+    /// </summary>
+    /// <param name="args">Аргументы командной строки.</param>
     static void Main(string[] args)
     {
+        StorageMode mode = ChooseMode();
+
+        try
+        {
+            logic = new BusinessLogic(mode);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("Не удалось подключиться к базе данных:\n" + (ex.InnerException ?? ex).Message);
+            return;
+        }
+
         string[] items =
         {
             "Показать таблицу",
@@ -15,7 +34,6 @@ internal class Program
             "Показать гистограмму",
             "Выход"
         };
-        logic.AddTestStudents();//тестовые данные
         int selected = 0;
 
         while (true)
@@ -45,7 +63,34 @@ internal class Program
             }
         }
     }
+    /// <summary>
+    /// Показывает меню выбора реализации доступа к данным.
+    /// </summary>
+    /// <returns>EF Core или Dapper.</returns>
+    static StorageMode ChooseMode()
+    {
+        string[] items = { "Entity Framework Core", "Dapper" };
+        int selected = 0;
 
+        while (true)
+        {
+            DrawMenu(items, selected);
+            Console.WriteLine("\n(выберите реализацию доступа к данным)");
+            ConsoleKey key = Console.ReadKey().Key;
+
+            if (key == ConsoleKey.UpArrow || key == ConsoleKey.W)
+                selected = (selected - 1 + items.Length) % items.Length;
+            else if (key == ConsoleKey.DownArrow || key == ConsoleKey.S)
+                selected = (selected + 1) % items.Length;
+            else if (key == ConsoleKey.Enter)
+                return selected == 1 ? StorageMode.Dapper : StorageMode.EfCore;
+        }
+    }
+    /// <summary>
+    /// Рисует меню и подсвечивает выбранный пункт.
+    /// </summary>
+    /// <param name="items">Названия пунктов.</param>
+    /// <param name="selected">Номер выбранного пункта.</param>
     static void DrawMenu(string[] items, int selected)
     {
         Console.Clear();
@@ -66,6 +111,9 @@ internal class Program
         }
     }//вывод меню выбора
 
+    /// <summary>
+    /// Выводит таблицу студентов: номер, ФИО, специальность, группа.
+    /// </summary>
     static void ShowStudents()
     {
         string[][] studentsData = logic.GetStudents();
@@ -84,6 +132,9 @@ internal class Program
         }
     }//метод вывода студентов для консоли, использует GetStudents из BusinessLogic
 
+    /// <summary>
+    /// Запрашивает данные у пользователя и добавляет студента.
+    /// </summary>
     static void AddStudent()
     {
         Console.Write("ФИО: ");
@@ -106,6 +157,9 @@ internal class Program
 
     }//метод добавления студента для консоли, использует AddStudent из BusinessLogic
 
+    /// <summary>
+    /// Показывает список и удаляет студента по введённому номеру.
+    /// </summary>
     static void DeleteStudent()
     {
         ShowStudents();
@@ -117,6 +171,9 @@ internal class Program
             Console.WriteLine("Студента с таким ID нет");
     }//метод удаления студента для консоли, использует DeleteStudent из BusinessLogic
 
+    /// <summary>
+    /// Выводит гистограмму по специальностям символами #.
+    /// </summary>
     static void ShowHistogram()
     {
         Dictionary<string, int> histogram = logic.GetHistogram();

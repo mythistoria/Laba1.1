@@ -1,13 +1,20 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace WinFormsApp1
 {
+    /// <summary>
+    /// Окно с гистограммой: количество студентов по специальностям.
+    /// </summary>
     internal class HistogramForm: Form
     {
         private readonly Dictionary<string, int> data;
 
+        /// <summary>
+        /// Создаёт окно и сохраняет данные для рисования.
+        /// </summary>
+        /// <param name="data">Словарь: специальность - количество.</param>
         public HistogramForm(Dictionary<string, int> data)
         {
             this.data = data;
@@ -17,6 +24,10 @@ namespace WinFormsApp1
             ResizeRedraw = true;
         }
 
+        /// <summary>
+        /// Рисует столбцы гистограммы вручную: высота пропорциональна количеству, сверху число, снизу название.
+        /// </summary>
+        /// <param name="e">Данные перерисовки (Graphics).</param>
         protected override void OnPaint(PaintEventArgs e)
         {
             base.OnPaint(e);
