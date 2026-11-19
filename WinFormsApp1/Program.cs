@@ -1,5 +1,6 @@
 namespace WinFormsApp1
 {
+    /// <summary>Точка входа и конфигурация WinForms-приложения.</summary>
     internal static class Program
     {
         /// <summary>

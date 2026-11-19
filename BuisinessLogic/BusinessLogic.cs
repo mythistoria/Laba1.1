@@ -8,7 +8,10 @@ namespace BL;
 /// </summary>
 public enum StorageMode
 {
+    /// <summary>Использовать Entity Framework Core.</summary>
     EfCore,
+
+    /// <summary>Использовать Dapper.</summary>
     Dapper
 }
 
@@ -50,15 +53,14 @@ public class BusinessLogic
 
         repository.Add(new Student
         {
-            Name = newName,
-            Speciality = newSpeciality,
-            Group = newGroup
+            Name = newName.Trim(),
+            Speciality = newSpeciality.Trim(),
+            Group = newGroup.Trim()
         });
 
         return true;
     }
 
-    // index - номер строки в списке (View про Id в базе ничего не знает)
     /// <summary>
     /// Удаляет студента по номеру в списке: находит его Id и вызывает репозиторий.
     /// </summary>
@@ -76,11 +78,10 @@ public class BusinessLogic
         return repository.Delete(students[index].ID);
     }
 
-    // Наружу отдаём массив массивов, чтобы View не зависел от Model
     /// <summary>
-    /// Возвращает список студентов как массив массивов строк (ФИО, специальность, группа), чтобы интерфейс не зависел от класса Student.
+    /// Возвращает список студентов как массив массивов строк (ID, ФИО, специальность, группа).
     /// </summary>
-    /// <returns>Массив строк [ФИО, специальность, группа].</returns>
+    /// <returns>Массив строк [ID, ФИО, специальность, группа].</returns>
     public string[][] GetStudents()
     {
         List<Student> students = repository.GetAll();
@@ -90,6 +91,7 @@ public class BusinessLogic
         {
             result[i] = new string[]
             {
+                students[i].ID.ToString(),
                 students[i].Name,
                 students[i].Speciality,
                 students[i].Group
@@ -97,6 +99,16 @@ public class BusinessLogic
         }
 
         return result;
+    }
+
+    /// <summary>
+    /// Удаляет студента по реальному идентификатору базы данных.
+    /// </summary>
+    /// <param name="id">ID студента.</param>
+    /// <returns>true - удалено; false - ID не существует.</returns>
+    public bool DeleteStudentById(int id)
+    {
+        return repository.Delete(id);
     }
 
     /// <summary>

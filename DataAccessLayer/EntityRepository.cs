@@ -6,6 +6,9 @@ namespace DataAccessLayer;
 /// <summary>CRUD студентов через EF Core.</summary>
 public sealed class EntityRepository : IRepository<Student>
 {
+    /// <summary>Добавляет студента через EF Core и возвращает выданный ID.</summary>
+    /// <param name="item">Новый студент.</param>
+    /// <returns>Идентификатор добавленного студента.</returns>
     public int Add(Student item)
     {
         RepositoryRules.Validate(item, true);
@@ -15,6 +18,9 @@ public sealed class EntityRepository : IRepository<Student>
         return item.ID;
     }
 
+    /// <summary>Удаляет студента с указанным идентификатором через EF Core.</summary>
+    /// <param name="id">ID студента.</param>
+    /// <returns>true, если удалена одна запись; иначе false.</returns>
     public bool Delete(int id)
     {
         if (id <= 0) return false;
@@ -23,6 +29,8 @@ public sealed class EntityRepository : IRepository<Student>
             .ExecuteDelete() == 1;
     }
 
+    /// <summary>Возвращает всех студентов без отслеживания изменений, отсортированных по ID.</summary>
+    /// <returns>Список студентов.</returns>
     public List<Student> GetAll()
     {
         using var db = new Context();
@@ -30,6 +38,9 @@ public sealed class EntityRepository : IRepository<Student>
             .OrderBy(item => EF.Property<int>(item, nameof(IDomainObject.ID))).ToList();
     }
 
+    /// <summary>Возвращает студента с указанным идентификатором через EF Core.</summary>
+    /// <param name="id">ID студента.</param>
+    /// <returns>Студент или null, если запись не найдена.</returns>
     public Student? GetById(int id)
     {
         if (id <= 0) return null;
@@ -38,6 +49,8 @@ public sealed class EntityRepository : IRepository<Student>
             .SingleOrDefault(item => EF.Property<int>(item, nameof(IDomainObject.ID)) == id);
     }
 
+    /// <summary>Обновляет данные существующего студента через EF Core.</summary>
+    /// <param name="item">Студент с существующим ID и обновленными данными.</param>
     public void Save(Student item)
     {
         RepositoryRules.Validate(item, false);

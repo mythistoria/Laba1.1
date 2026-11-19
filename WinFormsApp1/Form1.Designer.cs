@@ -100,9 +100,13 @@
 
         #endregion
 
+        /// <summary>Кнопка открытия формы добавления студента.</summary>
         private Button buttonAdd;
+        /// <summary>Кнопка удаления выбранного студента.</summary>
         private Button buttonDelete;
+        /// <summary>Кнопка открытия окна гистограммы.</summary>
         private Button buttonHistogram;
+        /// <summary>Таблица со списком студентов.</summary>
         private DataGridView dgvStudents;
     }
 }

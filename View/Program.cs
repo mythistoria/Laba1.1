@@ -9,12 +9,14 @@ internal class Program
     static BusinessLogic logic = null!;
     
     /// <summary>
-    /// Точка входа: выбирает режим хранения (аргумент dapper - Dapper, иначе EF Core), подключается к базе и запускает цикл меню.
+    /// Точка входа консольного приложения: выбирает режим хранения, подключается к базе и запускает цикл меню.
     /// </summary>
-    /// <param name="args">Аргументы командной строки.</param>
+    /// <param name="args">Аргументы командной строки. Аргумент dapper выбирает Dapper.</param>
     static void Main(string[] args)
     {
-        StorageMode mode = ChooseMode();
+        StorageMode mode = args.Any(arg => string.Equals(arg, "dapper", StringComparison.OrdinalIgnoreCase))
+            ? StorageMode.Dapper
+            : ChooseMode();
 
         try
         {
@@ -49,13 +51,20 @@ internal class Program
             {
                 Console.Clear();
 
-                switch (selected)
+                try
                 {
-                    case 0: ShowStudents(); break;
-                    case 1: AddStudent(); break;
-                    case 2: DeleteStudent(); break;
-                    case 3: ShowHistogram(); break;
-                    case 4: return;
+                    switch (selected)
+                    {
+                        case 0: ShowStudents(); break;
+                        case 1: AddStudent(); break;
+                        case 2: DeleteStudent(); break;
+                        case 3: ShowHistogram(); break;
+                        case 4: return;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Ошибка выполнения операции:\n" + (ex.InnerException ?? ex).Message);
                 }
 
                 Console.WriteLine("\nНажмите любую клавишу, чтобы вернуться в меню...");
@@ -66,7 +75,7 @@ internal class Program
     /// <summary>
     /// Показывает меню выбора реализации доступа к данным.
     /// </summary>
-    /// <returns>EF Core или Dapper.</returns>
+    /// <returns>Выбранный режим EF Core или Dapper.</returns>
     static StorageMode ChooseMode()
     {
         string[] items = { "Entity Framework Core", "Dapper" };
@@ -127,8 +136,7 @@ internal class Program
         Console.WriteLine($"{"ID",-4}{"Имя",-25}{"Специальность",-25}{"Группа",-10}");
         for (int i = 0; i < studentsData.Length; i++)
         {
-            // studentsData[i][0] — Имя, [1] — Специальность, [2] — Группа
-            Console.WriteLine($"{i,-4}{studentsData[i][0],-25}{studentsData[i][1],-25}{studentsData[i][2],-10}");
+            Console.WriteLine($"{studentsData[i][0],-4}{studentsData[i][1],-25}{studentsData[i][2],-25}{studentsData[i][3],-10}");
         }
     }//метод вывода студентов для консоли, использует GetStudents из BusinessLogic
 
@@ -165,7 +173,7 @@ internal class Program
         ShowStudents();
         Console.Write("\nВведите ID студента для удаления: ");
 
-        if (int.TryParse(Console.ReadLine(), out int id) && logic.DeleteStudent(id))
+        if (int.TryParse(Console.ReadLine(), out int id) && logic.DeleteStudentById(id))
             Console.WriteLine("Студент удалён");
         else
             Console.WriteLine("Студента с таким ID нет");
