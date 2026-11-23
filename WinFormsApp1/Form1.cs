@@ -8,10 +8,13 @@ namespace WinFormsApp1
     /// </summary>
     public partial class Form1 : Form
     {
+        /// <summary>Текущий экземпляр бизнес-логики для выбранного режима хранения.</summary>
         private BusinessLogic? logic;
 
         // выбор реализации доступа к данным: EF Core или Dapper
+        /// <summary>Список выбора реализации доступа к данным.</summary>
         private readonly ComboBox cmbMode = new() { Left = 40, Top = 128, Width = 220 };
+        /// <summary>Подпись к списку выбора реализации хранения.</summary>
         private readonly Label lblMode = new() { Left = 270, Top = 134, Width = 420, Text = "Реализация доступа к данным" };
 
         /// <summary>
@@ -58,11 +61,15 @@ namespace WinFormsApp1
         {
             if (dgvStudents.Columns.Count == 0)
             {
-                dgvStudents.ColumnCount = 3;
-                dgvStudents.Columns[0].Name = "ФИО";
-                dgvStudents.Columns[1].Name = "Специальность";
-                dgvStudents.Columns[2].Name = "Группа";
-                dgvStudents.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+                dgvStudents.ColumnCount = 4;
+                dgvStudents.Columns[0].Name = "ID";
+                dgvStudents.Columns[0].Visible = false;
+                dgvStudents.Columns[1].Name = "ФИО";
+                dgvStudents.Columns[2].Name = "Специальность";
+                dgvStudents.Columns[3].Name = "Группа";
+                dgvStudents.Columns[1].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dgvStudents.Columns[2].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                dgvStudents.Columns[3].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
             }
             dgvStudents.Rows.Clear();
             if (logic == null) return;
@@ -84,14 +91,22 @@ namespace WinFormsApp1
             using var form = new AddStudentForm();
             if (form.ShowDialog() == DialogResult.OK)
             {
-                bool added = logic.AddStudent(form.StudentName, form.Speciality, form.Group);
-
-                if (!added)
+                try
                 {
-                    MessageBox.Show("Заполните все поля корректно");
-                    return;
+                    bool added = logic.AddStudent(form.StudentName, form.Speciality, form.Group);
+
+                    if (!added)
+                    {
+                        MessageBox.Show("Заполните все поля корректно");
+                        return;
+                    }
+                    RefreshTable();
                 }
-                RefreshTable();
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Не удалось добавить студента:\n\n" + (ex.InnerException ?? ex).Message,
+                        "Ошибка БД");
+                }
             }
         }
 
@@ -109,8 +124,24 @@ namespace WinFormsApp1
                 return;
             }
 
-            logic.DeleteStudent(dgvStudents.CurrentRow.Index);
-            RefreshTable();
+            try
+            {
+                if (dgvStudents.CurrentRow.Index >= 0 &&
+                    int.TryParse(dgvStudents.CurrentRow.Cells[0].Value?.ToString(), out int id) &&
+                    logic.DeleteStudentById(id))
+                {
+                    RefreshTable();
+                }
+                else
+                {
+                    MessageBox.Show("Студента с таким ID нет");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Не удалось удалить студента:\n\n" + (ex.InnerException ?? ex).Message,
+                    "Ошибка БД");
+            }
         }
 
         /// <summary>

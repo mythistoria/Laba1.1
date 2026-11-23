@@ -38,6 +38,8 @@ public static class DbSettings
     /// Ищет папку DataAccessLayer, поднимаясь от папки с exe вверх по каталогам, и возвращает путь к файлу базы.
     /// </summary>
     /// <returns>Полный путь к Laba2DB.mdf.</returns>
+    /// <summary>Ищет каталог DataAccessLayer и возвращает полный путь к MDF-файлу базы.</summary>
+    /// <returns>Путь к Laba2DB.mdf.</returns>
     private static string FindDbFile()
     {
         DirectoryInfo? dir = new DirectoryInfo(AppContext.BaseDirectory);

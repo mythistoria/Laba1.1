@@ -7,8 +7,10 @@ namespace WinFormsApp1
     /// <summary>
     /// Окно с гистограммой: количество студентов по специальностям.
     /// </summary>
+    /// <summary>Окно с столбчатой гистограммой распределения студентов по специальностям.</summary>
     internal class HistogramForm: Form
     {
+        /// <summary>Данные гистограммы: специальность и количество студентов.</summary>
         private readonly Dictionary<string, int> data;
 
         /// <summary>

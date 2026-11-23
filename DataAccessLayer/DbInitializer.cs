@@ -11,6 +11,7 @@ public static class DbInitializer
     /// <summary>
     /// Подготавливает базу: EnsureDatabase, затем создание таблицы (EnsureCreated) и добавление 10 тестовых студентов, если таблица пуста. Можно вызывать многократно.
     /// </summary>
+    /// <summary>Создает или прикрепляет базу, таблицу и начальные тестовые данные.</summary>
     public static void Init()
     {
         EnsureDatabase();
@@ -39,6 +40,7 @@ public static class DbInitializer
     /// <summary>
     /// Проверяет через master, прикреплена ли база к экземпляру и к нужному файлу. При необходимости создаёт базу, прикрепляет существующий файл или откреплает старую запись и прикрепляет файл заново.
     /// </summary>
+    /// <summary>Проверяет прикрепление базы и создаёт либо прикрепляет MDF-файл при необходимости.</summary>
     private static void EnsureDatabase()
     {
         string name = DbSettings.Database;

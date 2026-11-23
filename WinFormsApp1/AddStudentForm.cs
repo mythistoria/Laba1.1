@@ -7,12 +7,18 @@ namespace WinFormsApp1
     /// <summary>
     /// Диалоговое окно ввода данных нового студента.
     /// </summary>
+    /// <summary>Диалоговое окно для ввода данных нового студента.</summary>
     internal class AddStudentForm:Form
     {
+        /// <summary>Поле ввода ФИО студента.</summary>
         private readonly TextBox txtName = new() { Left = 170, Top = 20, Width = 360 };
+        /// <summary>Поле ввода специальности студента.</summary>
         private readonly TextBox txtSpeciality = new() { Left = 170, Top = 65, Width = 360 };
+        /// <summary>Поле ввода учебной группы.</summary>
         private readonly TextBox txtGroup = new() { Left = 170, Top = 110, Width = 360 };
+        /// <summary>Кнопка подтверждения ввода.</summary>
         private readonly Button btnOk = new() { Text = "OK", Left = 150, Top = 160, Width = 120, Height = 35 };
+        /// <summary>Кнопка отмены ввода.</summary>
         private readonly Button btnCancel = new() { Text = "Отмена", Left = 290, Top = 160, Width = 120, Height = 35 };
 
         /// <summary>
