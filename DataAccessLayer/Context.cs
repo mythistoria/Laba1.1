@@ -13,10 +13,6 @@ public class Context : DbContext
     /// </summary>
     public DbSet<Student> Students => Set<Student>();
 
-    /// <summary>
-    /// Настраивает подключение: используется SQL Server (LocalDB) со строкой из DbSettings.
-    /// </summary>
-    /// <param name="optionsBuilder">Построитель параметров контекста.</param>
     /// <summary>Настраивает строку подключения SQL Server для контекста.</summary>
     /// <param name="optionsBuilder">Построитель параметров контекста.</param>
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -24,10 +20,6 @@ public class Context : DbContext
         optionsBuilder.UseSqlServer(DbSettings.ConnectionString);
     }
 
-    /// <summary>
-    /// Описывает модель (Fluent API): имя таблицы, первичный ключ, длины и обязательность полей, имя колонки GroupName.
-    /// </summary>
-    /// <param name="modelBuilder">Построитель модели.</param>
     /// <summary>Настраивает сопоставление сущности Student с таблицей Students.</summary>
     /// <param name="modelBuilder">Построитель модели EF Core.</param>
     protected override void OnModelCreating(ModelBuilder modelBuilder)
